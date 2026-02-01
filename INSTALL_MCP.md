@@ -65,6 +65,51 @@ Locate your configuration file and add this entry:
 
 ---
 
+## 🤖 Activation in Popular Agents
+
+### 1. Claude Desktop
+Claude Desktop uses a JSON configuration file.
+- **Windows**: `%APPDATA%\Claude\claude_desktop_config.json`
+- **macOS**: `~/Library/Application Support/Claude/claude_desktop_config.json`
+
+Add the entry to `mcpServers`:
+```json
+{
+  "mcpServers": {
+    "notebooklm": {
+      "type": "stdio",
+      "command": "PATH_TO_NOTEBOOKLM_MCP",
+      "args": []
+    }
+  }
+}
+```
+
+### 2. Cursor
+You can add MCP servers directly in the Cursor UI:
+1. Open **Cursor Settings** (Cmd + Shift + J or Ctrl + Shift + J).
+2. Go to **Features** > **MCP Servers**.
+3. Click **+ Add New MCP Server**.
+4. Set **Name** to `notebooklm`.
+5. Set **Type** to `command`.
+6. Set **Command** to the full path provided by the `setup_mcp.py` script.
+7. Click **Add**.
+
+### 3. Windsurf
+Managed via UI or config file:
+- **UI**: Click the MCP icon in the bottom sidebar.
+- **Config**: `~/.codeium/windsurf/mcp_config.json` (macOS/Linux).
+
+### 4. Cline (VS Code Extension)
+1. Open **Cline Settings** in VS Code.
+2. Go to **MCP Servers**.
+3. Click **Add**.
+4. Set **Name** to `notebooklm`.
+5. Set **Command** to the executable path.
+6. Click **Save**.
+
+---
+
 ## ❓ FAQ & Troubleshooting
 
 ### Command not found?
