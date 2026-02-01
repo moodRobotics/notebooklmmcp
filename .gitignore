@@ -1,0 +1,15 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+.env
+
+# MCP
+tools_list.json
+init_response.json
+pip_output.txt
+
+# OS
+.DS_Store
+Thumbs.db
