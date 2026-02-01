@@ -50,7 +50,11 @@ With this server, your AI assistant (Claude Desktop, Cursor, VS Code, etc.) can 
 2. Add the `notebooklm` entry to the `servers` object.
 
 ### 💎 Gemini CLI
-- Configure your `~/.gemini/config.json` to include the MCP server path under the tools section.
+Run the following command in your terminal:
+```bash
+codex mcp add notebooklm -- "C:\Users\sirlo\AppData\Roaming\Python\Python311\Scripts\notebooklm-mcp.exe"
+```
+*(Verify the path matches your Python installation)*
 
 ### 🏢 Visual Studio
 - Use an MCP-compatible extension from the Marketplace (search for "MCP Client") and follow the extension-specific configuration steps.

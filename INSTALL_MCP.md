@@ -122,8 +122,11 @@ Add to the `servers` object:
 ```
 
 ### 6. Gemini CLI
-Gemini CLI can be configured to use MCP tools by pointing to the server in your local config.
-- **Path**: `~/.gemini/config.json`
+Gemini CLI can be configured to use MCP tools by running this command in your terminal:
+```bash
+codex mcp add notebooklm -- "C:\Users\sirlo\AppData\Roaming\Python\Python311\Scripts\notebooklm-mcp.exe"
+```
+*(Make sure the path is correct for your system)*
 
 ### 7. Visual Studio
 Visual Studio support is primarily through extensions.
