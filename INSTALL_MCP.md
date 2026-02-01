@@ -1,0 +1,79 @@
+# NotebookLM MCP: Universal Setup Guide (Windows, macOS, Linux)
+
+This guide provides a single, unified method to install and configure the NotebookLM MCP server on any operating system.
+
+## 🚀 One-Step Setup
+
+The easiest way to set this up is using the provided Python script.
+
+### 1. Run the script
+Open your terminal in the root of this repository and run:
+
+```bash
+# On Windows
+python setup_mcp.py
+
+# On macOS / Linux
+python3 setup_mcp.py
+```
+
+---
+
+## 🛠️ Manual Installation (Cross-Platform)
+
+If you prefer to do it manually, follow these universal steps:
+
+### 1. Install the Server
+```bash
+# Windows
+python -m pip install --user -U notebooklm-mcp-server
+
+# macOS / Linux
+python3 -m pip install --user -U notebooklm-mcp-server
+```
+
+### 2. Authenticate (Critical)
+You MUST authenticate before the server will work. A browser window will open for you to log in to your Google Account.
+```bash
+# Windows
+notebooklm-mcp-auth
+
+# macOS / Linux
+# You might need to add ~/.local/bin to your PATH
+notebooklm-mcp-auth
+```
+
+### 3. Add to MCP Client Configuration
+Locate your configuration file and add this entry:
+
+```json
+{
+  "mcpServers": {
+    "notebooklm": {
+      "type": "stdio",
+      "command": "PATH_TO_EXECUTABLE",
+      "args": []
+    }
+  }
+}
+```
+
+**Where is the configuration file?**
+- **Windows**: `%APPDATA%\Claude\claude_desktop_config.json`
+- **macOS**: `~/Library/Application Support/Claude/claude_desktop_config.json`
+- **Linux**: `~/.config/Claude/claude_desktop_config.json`
+
+---
+
+## ❓ FAQ & Troubleshooting
+
+### Command not found?
+If `notebooklm-mcp` or `notebooklm-mcp-auth` are not found after installation, you need to add your Python Scripts folder to your system's PATH.
+- **Windows**: Typically `%APPDATA%\Python\Python3xx\Scripts`
+- **Linux/macOS**: Typically `~/.local/bin` or the `bin` folder in your Python environment.
+
+### Multiple Python Versions?
+Always use the version of Python where you installed the package. If using a virtual environment (venv), the path to the executable will be inside the `bin` (or `Scripts`) folder of that environment.
+
+### Google Login issues?
+The authentication tool uses a headless-capable Chrome profile. If login fails, try running the command again and ensure no other instances of the auth Chrome window are open.
