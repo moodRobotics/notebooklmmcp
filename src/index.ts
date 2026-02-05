@@ -222,10 +222,10 @@ class NotebookLMServer {
         switch (name) {
           case "list_notebooks": {
             const page = await this.getPage();
-            await page.waitForSelector(
-              'a[href*="/notebook/"], text="Create new"',
-              { timeout: 15000 },
-            );
+            await page
+              .locator('a[href*="/notebook/"]')
+              .first()
+              .waitFor({ state: "visible", timeout: 15000 });
 
             const notebooks = await page.evaluate(() => {
               const cards = Array.from(
