@@ -170,12 +170,17 @@ claude skill add notebooklm -- "npx -y notebooklm-mcp-server start"
 
 ## 📖 Documentation
 
-| Tool              | Description                                             |
-| :---------------- | :------------------------------------------------------ |
-| `list_notebooks`  | Lists all notebooks available in your account.          |
-| `create_notebook` | Creates a new notebook with an optional title.          |
-| `get_notebook`    | Retrieves the full content and summaries of a notebook. |
-| `query_notebook`  | Asks a grounded question to a specific notebook.        |
+| Tool                      | Description                                           |
+| :------------------------ | :---------------------------------------------------- |
+| `list_notebooks`          | Lists all notebooks available in your account.        |
+| `create_notebook`         | Creates a new notebook with an optional title.        |
+| `get_notebook`            | Retrieves the details and sources of a notebook.      |
+| `query_notebook`          | Asks a grounded question to a specific notebook.      |
+| `add_source_url`          | Adds a website or YouTube video as a source.          |
+| `add_source_text`         | Adds pasted text content as a source.                 |
+| `generate_audio_overview` | Triggers the generation of an Audio Overview podcast. |
+| `rename_notebook`         | Renames an existing notebook.                         |
+| `delete_notebook`         | Deletes a notebook (Warning: Destructive).            |
 
 ---
 
