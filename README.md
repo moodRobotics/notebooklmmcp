@@ -71,7 +71,7 @@ Before using the server, you must link it to your Google Account. This version u
 
 1. Run the authentication command:
    ```bash
-   notebooklm-mcp-server auth
+   npx notebooklm-mcp-server auth
    ```
 2. A browser window will open. Log in with your Google account.
 3. Close the browser once you see your notebooks. Your session is now securely saved locally.
@@ -124,21 +124,36 @@ Since VS Code does not support MCP natively yet, you must use an extension:
 
 ### 🌌 Antigravity
 
-1. Open your `mcp.json` configuration file.
-2. Add the following entry to the `servers` object:
-   ```json
-   "notebooklm": {
-     "command": "npx",
-     "args": ["-y", "notebooklm-mcp-server", "start"]
-   }
-   ```
+Antigravity supports MCP natively. You can add the server by editing your global configuration file:
+
+1. **Locate your `mcp.json`**:
+   - **Windows**: `%APPDATA%\antigravity\mcp.json`
+   - **macOS**: `~/Library/Application Support/antigravity/mcp.json`
+   - **Linux**: `~/.config/antigravity/mcp.json`
+
+2. **Add the server** to the `mcpServers` object:
+
+```json
+{
+  "mcpServers": {
+    "notebooklm": {
+      "command": "npx",
+      "args": ["-y", "notebooklm-mcp-server", "start"]
+    }
+  }
+}
+```
+
+3. **Restart Antigravity**: The new tools will appear in your sidebar instantly.
+
+---
 
 ### 💎 Gemini CLI
 
 Run the following command in your terminal to add the notebooklm skill:
 
 ```bash
-gemini mcp add notebooklm -- npx -y notebooklm-mcp-server start
+gemini mcp add notebooklm --scope user -- npx -y notebooklm-mcp-server start
 ```
 
 ---

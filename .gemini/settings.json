@@ -4,7 +4,8 @@
       "command": "npx",
       "args": [
         "-y",
-        "notebooklm-mcp@latest"
+        "notebooklm-mcp-server",
+        "start"
       ]
     }
   }
