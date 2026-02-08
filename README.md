@@ -54,6 +54,9 @@ npm install -g notebooklm-mcp-server
 npx playwright install chromium
 ```
 
+> [!NOTE]
+> **Auto-update**: The server automatically checks for new versions at startup. If an update exists, it will install itself and ask you to restart to ensure you always have the latest Google fixes.
+
 ### 2. Direct usage with NPX (Zero-Config)
 
 If you don't want to install it globally, you can run it directly:
@@ -75,6 +78,9 @@ Before using the server, you must link it to your Google Account. This version u
    ```
 2. A browser window will open. Log in with your Google account.
 3. Close the browser once you see your notebooks. Your session is now securely saved locally.
+
+> [!TIP]
+> **Session Expired?** If your agent receives authentication errors, simply ask it to run the command `npx notebooklm-mcp-server refresh_auth`. It will automatically open the browser for you to renew the session without leaving your chat.
 
 ---
 
@@ -170,17 +176,45 @@ claude skill add notebooklm -- "npx -y notebooklm-mcp-server start"
 
 ## 📖 Documentation
 
-| Tool                      | Description                                           |
-| :------------------------ | :---------------------------------------------------- |
-| `list_notebooks`          | Lists all notebooks available in your account.        |
-| `create_notebook`         | Creates a new notebook with an optional title.        |
-| `get_notebook`            | Retrieves the details and sources of a notebook.      |
-| `query_notebook`          | Asks a grounded question to a specific notebook.      |
-| `add_source_url`          | Adds a website or YouTube video as a source.          |
-| `add_source_text`         | Adds pasted text content as a source.                 |
-| `generate_audio_overview` | Triggers the generation of an Audio Overview podcast. |
-| `rename_notebook`         | Renames an existing notebook.                         |
-| `delete_notebook`         | Deletes a notebook (Warning: Destructive).            |
+The following tools are available through this MCP server:
+
+### 📒 Notebook Management
+| Tool               | Description                                           |
+| :----------------- | :---------------------------------------------------- |
+| `notebook_list`    | Lists all notebooks in your account.                  |
+| `notebook_create`  | Creates a new notebook with a title.                  |
+| `notebook_rename`  | Renames an existing notebook.                         |
+| `notebook_delete`  | Deletes a notebook (Warning: Destructive).            |
+
+### 🖇️ Source Management
+| Tool                     | Description                                            |
+| :----------------------- | :----------------------------------------------------- |
+| `notebook_add_url`        | Adds a website or YouTube video as a source.           |
+| `notebook_add_text`       | Adds custom text content as a source.                  |
+| `notebook_add_local_file` | Uploads a local PDF, Markdown or Text file.            |
+| `notebook_add_drive`      | Adds a file from Google Drive (Docs, Slides, etc).     |
+| `source_delete`           | Removes a source from a notebook.                      |
+| `source_sync`             | Syncs a Drive source to get the latest version.        |
+
+### 🔍 Research & Query
+| Tool               | Description                                           |
+| :----------------- | :---------------------------------------------------- |
+| `notebook_query`   | Asks a grounded question to a specific notebook.      |
+| `research_start`   | Starts a web/drive research task.                     |
+| `research_poll`    | Polls for research status and results.                |
+| `research_import`  | Imports research results as permanent sources.        |
+
+### 🎨 Studio & Generation
+| Tool                    | Description                                           |
+| :---------------------- | :---------------------------------------------------- |
+| `audio_overview_create` | Generates an Audio Overview (podcast).                |
+| `studio_poll`           | Checks status of generated audio/video artifacts.     |
+| `mind_map_generate`     | Generates a Mind Map JSON from sources.               |
+
+### ⚙️ System
+| Tool           | Description                                                        |
+| :------------- | :----------------------------------------------------------------- |
+| `refresh_auth` | **Interactive**: Opens a browser to renew your Google session. Use this if tools start failing. |
 
 ---
 

@@ -11,7 +11,7 @@ import chalk from "chalk";
 const server = new Server(
   {
     name: "notebooklm-mcp-server",
-    version: "1.1.0",
+    version: "1.1.8",
   },
   {
     capabilities: {
@@ -287,19 +287,23 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
     switch (name) {
       case "notebook_list":
         const notebooks = await client.listNotebooks();
-        return { content: [{ type: "text", text: JSON.stringify({ notebooks }, null, 2) }] };
+        if (!notebooks || notebooks.length === 0) {
+          return { content: [{ type: "text", text: "No notebooks found. Please verify your session with 'notebooklm-mcp-auth'." }] };
+        }
+        const listText = notebooks.map(n => `- ${n.title} (ID: ${n.id})`).join('\n');
+        return { content: [{ type: "text", text: `I found ${notebooks.length} notebooks in your account:\n\n${listText}` }] };
       
       case "notebook_create":
         const newId = await client.createNotebook(args?.title as string);
-        return { content: [{ type: "text", text: JSON.stringify({ status: "success", notebook_id: newId }) }] };
+        return { content: [{ type: "text", text: `Successfully created notebook: ${args?.title} (ID: ${newId})` }] };
 
       case "notebook_delete":
         await client.deleteNotebook(args?.notebook_id as string);
-        return { content: [{ type: "text", text: JSON.stringify({ status: "success", message: `Deleted notebook ${args?.notebook_id}` }) }] };
+        return { content: [{ type: "text", text: `Notebook deleted.` }] };
 
       case "notebook_rename":
         await client.renameNotebook(args?.notebook_id as string, args?.title as string);
-        return { content: [{ type: "text", text: JSON.stringify({ status: "success", message: `Renamed notebook to ${args?.title}` }) }] };
+        return { content: [{ type: "text", text: `Notebook renamed to: ${args?.title}` }] };
 
       case "notebook_add_url":
         const sourceIdUrl = await client.addUrlSource(args?.notebook_id as string, args?.url as string);
@@ -398,14 +402,15 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         // After auth is successful, we need to update our client
         const newCookies = auth.getSavedCookies();
         client = new NotebookLMClient(newCookies);
-        return { content: [{ type: "text", text: JSON.stringify({ status: "success", message: "Authentication refreshed successfully." }) }] };
+        return { content: [{ type: "text", text: "Autenticación renovada correctamente. Las herramientas deberían funcionar ahora." }] };
 
       default:
         throw new Error(`Unknown tool: ${name}`);
     }
   } catch (error: any) {
+    console.error(chalk.red(`Tool execution error [${name}]:`), error);
     return {
-      content: [{ type: "text", text: JSON.stringify({ status: "error", error: error.message }) }],
+      content: [{ type: "text", text: `Error: ${error.message || String(error)}` }],
       isError: true,
     };
   }
@@ -414,7 +419,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 async function main() {
   const transport = new StdioServerTransport();
   await server.connect(transport);
-  console.error("NotebookLM MCP Server running on stdio");
+  console.error("NotebookLM MCP Server v1.1.8 running on stdio");
 }
 
 main().catch((error) => {

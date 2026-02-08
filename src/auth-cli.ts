@@ -5,21 +5,21 @@ import ora from 'ora';
 
 export async function runAuthCli() {
   const auth = new AuthManager();
-  console.log('\n' + chalk.cyan.bold('╔═══════════════════════════════════════════╗'));
-  console.log(chalk.cyan.bold('║      NotebookLM MCP Authentication        ║'));
-  console.log(chalk.cyan.bold('╚═══════════════════════════════════════════╝\n'));
-
-  const spinner = ora('Initializing browser...').start();
   
+  // Use stderr for ALL logs to avoid breaking MCP stdout
+  console.error('\n' + chalk.cyan.bold('╔═══════════════════════════════════════════╗'));
+  console.error(chalk.cyan.bold('║      NotebookLM MCP Authentication        ║'));
+  console.error(chalk.cyan.bold('╚═══════════════════════════════════════════╝\n'));
+
   try {
     await auth.runAuthentication((status) => {
-      spinner.text = status;
+      console.error(chalk.blue(`[Status] ${status}`));
     });
-    spinner.succeed(chalk.green.bold('Authentication successful!'));
-    console.log('\n' + chalk.white('Your session is now active. You can use the server with your favorite MCP client.'));
+    console.error('\n' + chalk.green.bold('Authentication successful!'));
+    console.error(chalk.white('Your session is now active. You can close any leftovers and return to your chat.'));
   } catch (error: any) {
-    spinner.fail(chalk.red.bold('Authentication failed'));
-    console.error('\n' + chalk.red('Error: ') + error.message);
+    console.error('\n' + chalk.red.bold('Authentication failed'));
+    console.error(chalk.red('Error: ') + error.message);
     process.exit(1);
   }
 }

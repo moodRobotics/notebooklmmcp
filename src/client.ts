@@ -38,9 +38,10 @@ export class NotebookLMClient {
   }
 
   /**
-   * Internal RPC executor with retry logic for auth failures.
+   * Internal RPC executor with the original, working legacy format.
    */
   private async callRpc(rpcId: string, params: any[], _retryCount = 0): Promise<any> {
+    // Reverting to the simpler format that proved stable in v1.1.2
     const fReq = JSON.stringify([null, JSON.stringify(params)]);
     const body = new URLSearchParams();
     body.append('f.req', fReq);
@@ -67,7 +68,12 @@ export class NotebookLMClient {
         throw new AuthenticationError('Session expired in response body');
       }
 
-      return this.parseBatchResponse(response.data, rpcId);
+      const rpcResult = this.parseBatchResponse(response.data, rpcId);
+      if (rpcResult === null && typeof response.data === 'string' && response.data.length > 0 && !response.data.includes(rpcId)) {
+        // Response received but doesn't contain the expected RPC data - likely an auth/session issue
+        throw new AuthenticationError('Invalid session or session expired (RPC data not found)');
+      }
+      return rpcResult;
     } catch (error: any) {
       const isAuthError = 
         error instanceof AuthenticationError || 
@@ -91,11 +97,12 @@ export class NotebookLMClient {
   /**
    * Parses the weird batchexecute envelope format.
    */
-  private parseBatchResponse(data: string, rpcId: string): any {
+  private parseBatchResponse(data: any, rpcId: string): any {
     // Google's format is basically a set of chunked JSON arrays
-    // We need to extract the actual payload for the given rpcId
+    // We need to extract the payload for the given rpcId
     try {
-      const lines = data.split('\n');
+      const dataStr = typeof data === 'string' ? data : JSON.stringify(data);
+      const lines = dataStr.split('\n');
       for (const line of lines) {
         if (line.includes(rpcId)) {
           const match = line.match(/\["wobti",\s*"(.*?)",\s*"(.*?)"\]/);

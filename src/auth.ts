@@ -29,28 +29,52 @@ export class AuthManager {
     let isDone = false;
     try {
       await Promise.race([
-        // Wait for redirect to dashboard or notebook
+        // 1. Entering the app (notebook view or dashboard)
         page.waitForURL(url => 
           url.origin === 'https://notebooklm.google.com' && 
           (url.pathname.includes('/notebook') || url.pathname === '/'), 
           { timeout: 300000 }
         ).then(() => { isDone = true; }),
         
-        // Wait for user icon or other logged-in indicia
-        page.waitForSelector('button[aria-label*="Account"], img[src*="googleusercontent.com"]', { timeout: 300000 })
+        // 2. Main app structure (main role, notebook grid, or aria-labels)
+        page.waitForSelector('div[role="main"], .notebook-grid, [aria-label*="Notebook"], [aria-label*="notebook"]', { timeout: 300000 })
+          .then(() => { isDone = true; }),
+        
+        // 3. Account indicators (profile pic, logout links)
+        page.waitForSelector('button[aria-haspopup="true"] img[src*="googleusercontent.com"], a[href*="logout"], a[href*="Logout"]', { timeout: 300000 })
           .then(() => { isDone = true; }),
 
-        // Safety fallback: if we see the landing page, we might already be logged in
-        page.waitForFunction(() => {
-          const body = document.body.innerText;
-          return window.location.href.includes('notebooklm.google.com') && 
-                 !body.includes('Sign in') && 
-                 (body.includes('Notebooks') || body.includes('Create new'));
-        }, { polling: 2000, timeout: 300000 }).then(() => { isDone = true; }),
+        // 4. Fallback: check session cookies (language neutral)
+        new Promise((resolve) => {
+          const checkLoop = async () => {
+            if (isDone) return;
+            try {
+              const cookies = await context.cookies();
+              const sid = cookies.find(c => c.name === '__Secure-3PSID' || c.name === 'SID');
+              if (sid && page.url().includes('notebooklm.google.com')) {
+                isDone = true;
+                resolve(true);
+              } else {
+                if (!isDone) setTimeout(checkLoop, 2000);
+              }
+            } catch (e) {
+              isDone = true;
+            }
+          };
+          checkLoop();
+        })
       ]);
 
-      // Small delay to ensure all session cookies are synced
-      await page.waitForTimeout(2000);
+      // Ensure we actually have cookies before proceeding
+      const finalCookies = await context.cookies();
+      const hasSid = finalCookies.some(c => c.name === '__Secure-3PSID' || c.name === 'SID');
+      
+      if (!hasSid) {
+        // If we don't have session cookies, we might have just landed on the landing page
+        // Wait a bit more or throw to avoid saving empty/expired sessions
+        if (onStatus) onStatus('Verifying session session...');
+        await page.waitForTimeout(3000);
+      }
       
     } catch (e) {
       throw new Error('Authentication timed out or browser was closed.');
@@ -75,7 +99,7 @@ export class AuthManager {
 
     fs.writeFileSync(this.authPath, JSON.stringify(authData, null, 2));
     
-    console.log(`Authentication successful! Cookies saved to ${this.authPath}`);
+    console.error(`Authentication successful! Cookies saved to ${this.authPath}`);
     await browser.close();
   }
 
