@@ -25,12 +25,37 @@ export class AuthManager {
 
     if (onStatus) onStatus('Waiting for Google Login...');
     
-    // Wait for the user to be logged in and redirected to the main app
+    // Wait for the user to be logged in. 
+    let isDone = false;
     try {
-      await page.waitForURL('**/notebook/**', { timeout: 300000 }); // 5 minute timeout
+      await Promise.race([
+        // Wait for redirect to dashboard or notebook
+        page.waitForURL(url => 
+          url.origin === 'https://notebooklm.google.com' && 
+          (url.pathname.includes('/notebook') || url.pathname === '/'), 
+          { timeout: 300000 }
+        ).then(() => { isDone = true; }),
+        
+        // Wait for user icon or other logged-in indicia
+        page.waitForSelector('button[aria-label*="Account"], img[src*="googleusercontent.com"]', { timeout: 300000 })
+          .then(() => { isDone = true; }),
+
+        // Safety fallback: if we see the landing page, we might already be logged in
+        page.waitForFunction(() => {
+          const body = document.body.innerText;
+          return window.location.href.includes('notebooklm.google.com') && 
+                 !body.includes('Sign in') && 
+                 (body.includes('Notebooks') || body.includes('Create new'));
+        }, { polling: 2000, timeout: 300000 }).then(() => { isDone = true; }),
+      ]);
+
+      // Small delay to ensure all session cookies are synced
+      await page.waitForTimeout(2000);
+      
     } catch (e) {
-      await browser.close();
       throw new Error('Authentication timed out or browser was closed.');
+    } finally {
+      isDone = true;
     }
 
     if (onStatus) onStatus('Extracting secure session cookies...');

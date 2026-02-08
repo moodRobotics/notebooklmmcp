@@ -1,20 +1,19 @@
 #!/usr/bin/env node
 import { Command } from 'commander';
 import { AuthManager } from './auth.js';
-import './server.js'; // This starts the server logic
 
 const program = new Command();
 
 program
   .name('notebooklm-mcp-server')
   .description('NotebookLM MCP Server (Node.js)')
-  .version('1.0.6');
+  .version('1.1.0');
 
 program
   .command('server')
   .description('Start the MCP server (default)')
-  .action(() => {
-    import('./server.js');
+  .action(async () => {
+    await import('./server.js');
   });
 
 program
@@ -26,7 +25,9 @@ program
   });
 
 // Default to server if no command provided
-if (!process.argv.slice(2).length || !['auth', 'server', '--version', '-h', '--help'].includes(process.argv[2])) {
+const args = process.argv.slice(2);
+if (!args.length || !['auth', 'server', '--version', '-h', '--help'].includes(args[0])) {
+  // If no args or unknown command, start server
   import('./server.js');
 } else {
   program.parse();

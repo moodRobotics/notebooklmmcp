@@ -11,7 +11,7 @@ import chalk from "chalk";
 const server = new Server(
   {
     name: "notebooklm-mcp-server",
-    version: "1.0.5",
+    version: "1.1.0",
   },
   {
     capabilities: {
@@ -271,6 +271,11 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
           required: ["notebook_id"],
         },
       },
+      {
+        name: "refresh_auth",
+        description: "Open browser to refresh Google Session cookies (interactive)",
+        inputSchema: { type: "object", properties: {} },
+      },
     ],
   };
 });
@@ -282,27 +287,27 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
     switch (name) {
       case "notebook_list":
         const notebooks = await client.listNotebooks();
-        return { content: [{ type: "text", text: JSON.stringify(notebooks, null, 2) }] };
+        return { content: [{ type: "text", text: JSON.stringify({ notebooks }, null, 2) }] };
       
       case "notebook_create":
         const newId = await client.createNotebook(args?.title as string);
-        return { content: [{ type: "text", text: `Created notebook with ID: ${newId}` }] };
+        return { content: [{ type: "text", text: JSON.stringify({ status: "success", notebook_id: newId }) }] };
 
       case "notebook_delete":
         await client.deleteNotebook(args?.notebook_id as string);
-        return { content: [{ type: "text", text: `Deleted notebook ${args?.notebook_id}` }] };
+        return { content: [{ type: "text", text: JSON.stringify({ status: "success", message: `Deleted notebook ${args?.notebook_id}` }) }] };
 
       case "notebook_rename":
         await client.renameNotebook(args?.notebook_id as string, args?.title as string);
-        return { content: [{ type: "text", text: `Renamed notebook to ${args?.title}` }] };
+        return { content: [{ type: "text", text: JSON.stringify({ status: "success", message: `Renamed notebook to ${args?.title}` }) }] };
 
       case "notebook_add_url":
         const sourceIdUrl = await client.addUrlSource(args?.notebook_id as string, args?.url as string);
-        return { content: [{ type: "text", text: `Added source with ID: ${sourceIdUrl}` }] };
+        return { content: [{ type: "text", text: JSON.stringify({ status: "success", source_id: sourceIdUrl }) }] };
 
       case "notebook_add_text":
         const sourceIdText = await client.addTextSource(args?.notebook_id as string, args?.title as string, args?.content as string);
-        return { content: [{ type: "text", text: `Added text source with ID: ${sourceIdText}` }] };
+        return { content: [{ type: "text", text: JSON.stringify({ status: "success", source_id: sourceIdText }) }] };
 
       case "notebook_query":
         const queryResult = await client.query(
@@ -313,8 +318,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         );
         return { 
           content: [
-            { type: "text", text: queryResult.answer },
-            { type: "text", text: `\n\n(Conversation ID: ${queryResult.conversation_id})` }
+            { type: "text", text: JSON.stringify(queryResult, null, 2) }
           ] 
         };
 
@@ -325,7 +329,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
           (args?.source as 'web' | 'drive') || 'web',
           (args?.mode as 'fast' | 'deep') || 'fast'
         );
-        return { content: [{ type: "text", text: `Started research task: ${JSON.stringify(taskInfo)}` }] };
+        return { content: [{ type: "text", text: JSON.stringify({ status: "success", task: taskInfo }, null, 2) }] };
 
       case "research_poll":
         const researchResult = await client.pollResearch(args?.notebook_id as string);
@@ -337,7 +341,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
           args?.task_id as string,
           args?.sources as any[]
         );
-        return { content: [{ type: "text", text: `Imported ${imported.length} sources: ${JSON.stringify(imported)}` }] };
+        return { content: [{ type: "text", text: JSON.stringify({ status: "success", imported_count: imported.length, sources: imported }, null, 2) }] };
 
       case "mind_map_generate":
         const mmData = await client.generateMindMap(args?.source_ids as string[]);
@@ -350,31 +354,31 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
           args?.source_ids as string[],
           args?.title as string
         );
-        return { content: [{ type: "text", text: `Mind Map saved: ${JSON.stringify(savedMm)}` }] };
+        return { content: [{ type: "text", text: JSON.stringify({ status: "success", mind_map: savedMm }, null, 2) }] };
 
       case "mind_map_list":
         const maps = await client.listMindMaps(args?.notebook_id as string);
-        return { content: [{ type: "text", text: JSON.stringify(maps, null, 2) }] };
+        return { content: [{ type: "text", text: JSON.stringify({ mind_maps: maps }, null, 2) }] };
 
       case "mind_map_delete":
         await client.deleteMindMap(args?.notebook_id as string, args?.mind_map_id as string);
-        return { content: [{ type: "text", text: "Mind Map deleted." }] };
+        return { content: [{ type: "text", text: JSON.stringify({ status: "success", message: "Mind Map deleted." }) }] };
 
       case "notebook_add_local_file":
         const fileSourceId = await client.uploadLocalFile(args?.notebook_id as string, args?.path as string);
-        return { content: [{ type: "text", text: `Successfully uploaded and added file. Source ID: ${fileSourceId}` }] };
+        return { content: [{ type: "text", text: JSON.stringify({ status: "success", source_id: fileSourceId }) }] };
 
       case "notebook_add_drive":
         const driveId = await client.addDriveSource(args?.notebook_id as string, args?.file_id as string);
-        return { content: [{ type: "text", text: `Successfully added Drive source. ID: ${driveId}` }] };
+        return { content: [{ type: "text", text: JSON.stringify({ status: "success", source_id: driveId }) }] };
 
       case "source_delete":
         await client.deleteSource(args?.notebook_id as string, args?.source_id as string);
-        return { content: [{ type: "text", text: `Source ${args?.source_id} deleted successfully.` }] };
+        return { content: [{ type: "text", text: JSON.stringify({ status: "success", message: `Source ${args?.source_id} deleted successfully.` }) }] };
 
       case "source_sync":
         await client.syncDriveSource(args?.notebook_id as string, args?.source_id as string);
-        return { content: [{ type: "text", text: `Sync triggered for source ${args?.source_id}.` }] };
+        return { content: [{ type: "text", text: JSON.stringify({ status: "success", message: `Sync triggered for source ${args?.source_id}.` }) }] };
 
       case "audio_overview_create":
         const audioInfo = await client.createAudioOverview(
@@ -382,18 +386,26 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
           (args?.source_ids as string[]) || [],
           (args?.language as string) || 'en'
         );
-        return { content: [{ type: "text", text: `Audio Overview generation started: ${JSON.stringify(audioInfo)}` }] };
+        return { content: [{ type: "text", text: JSON.stringify({ status: "success", audio_info: audioInfo }, null, 2) }] };
 
       case "studio_poll":
         const studioStatus = await client.pollStudioStatus(args?.notebook_id as string);
         return { content: [{ type: "text", text: JSON.stringify(studioStatus, null, 2) }] };
+
+      case "refresh_auth":
+        const auth = new AuthManager();
+        await auth.runAuthentication();
+        // After auth is successful, we need to update our client
+        const newCookies = auth.getSavedCookies();
+        client = new NotebookLMClient(newCookies);
+        return { content: [{ type: "text", text: JSON.stringify({ status: "success", message: "Authentication refreshed successfully." }) }] };
 
       default:
         throw new Error(`Unknown tool: ${name}`);
     }
   } catch (error: any) {
     return {
-      content: [{ type: "text", text: `Error: ${error.message}` }],
+      content: [{ type: "text", text: JSON.stringify({ status: "error", error: error.message }) }],
       isError: true,
     };
   }
