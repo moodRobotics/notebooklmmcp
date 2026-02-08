@@ -8,7 +8,7 @@ const program = new Command();
 program
   .name('notebooklm-mcp-server')
   .description('NotebookLM MCP Server (Node.js)')
-  .version('1.0.4');
+  .version('1.0.6');
 
 program
   .command('server')

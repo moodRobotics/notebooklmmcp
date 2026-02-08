@@ -11,7 +11,7 @@ import chalk from "chalk";
 const server = new Server(
   {
     name: "notebooklm-mcp-server",
-    version: "1.0.4",
+    version: "1.0.5",
   },
   {
     capabilities: {

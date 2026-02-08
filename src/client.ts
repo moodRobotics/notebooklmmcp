@@ -4,8 +4,9 @@ import { v4 as uuidv4 } from 'uuid';
 import * as urllib from 'url';
 import * as fs from 'fs';
 import * as path from 'path';
-// @ts-ignore
-import pdf from 'pdf-parse/lib/pdf-parse.js';
+import { createRequire } from 'module';
+const require = createRequire(import.meta.url);
+const pdf = require('pdf-parse');
 
 export class AuthenticationError extends Error {
   constructor(message: string) {
