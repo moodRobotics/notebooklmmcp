@@ -6,9 +6,9 @@ import './server.js'; // This starts the server logic
 const program = new Command();
 
 program
-  .name('notebook-mcp-server')
+  .name('notebooklm-mcp-server')
   .description('NotebookLM MCP Server (Node.js)')
-  .version('1.0.0');
+  .version('1.0.4');
 
 program
   .command('server')

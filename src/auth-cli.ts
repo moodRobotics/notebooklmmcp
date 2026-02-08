@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 import { AuthManager } from './auth.js';
 import chalk from 'chalk';
 import ora from 'ora';

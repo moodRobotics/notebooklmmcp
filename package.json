@@ -1,8 +1,16 @@
 {
-  "name": "notebook-mcp-server",
-  "version": "1.0.0",
+  "name": "notebooklm-mcp-server",
+  "version": "1.0.4",
   "description": "Node.js Model Context Protocol server for Google NotebookLM",
   "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/moodRobotics/notebooklm-mcp-server.git"
+  },
+  "bugs": {
+    "url": "https://github.com/moodRobotics/notebooklm-mcp-server/issues"
+  },
+  "homepage": "https://github.com/moodRobotics/notebooklm-mcp-server#readme",
   "main": "dist/index.js",
   "files": [
     "dist",
@@ -11,8 +19,8 @@
     "docs"
   ],
   "bin": {
-    "notebook-mcp-server": "dist/index.js",
-    "notebook-mcp-auth": "dist/auth-cli.js"
+    "notebooklm-mcp-server": "dist/index.js",
+    "notebooklm-mcp-auth": "dist/auth-cli.js"
   },
   "scripts": {
     "build": "tsc",
@@ -54,6 +62,6 @@
     "ai",
     "server"
   ],
-  "author": "Antigravity",
+  "author": "Mood Robotics",
   "license": "MIT"
 }

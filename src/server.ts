@@ -10,8 +10,8 @@ import chalk from "chalk";
 
 const server = new Server(
   {
-    name: "notebook-mcp-server",
-    version: "1.0.0",
+    name: "notebooklm-mcp-server",
+    version: "1.0.4",
   },
   {
     capabilities: {
@@ -28,7 +28,7 @@ try {
   const cookies = process.env.NOTEBOOKLM_COOKIES || auth.getSavedCookies();
   client = new NotebookLMClient(cookies);
 } catch (error) {
-  console.error(chalk.yellow("Warning: No session data found. Please run 'notebook-mcp-auth' to log in."));
+  console.error(chalk.yellow("Warning: No session data found. Please run 'notebooklm-mcp-auth' to log in."));
   // Initialize with empty to avoid immediate crash, tools will fail with AuthError
   client = new NotebookLMClient("");
 }
