@@ -3,7 +3,7 @@
         "target": "ESNext",
         "module": "NodeNext",
         "moduleResolution": "NodeNext",
-        "outDir": "./build",
+        "outDir": "./dist",
         "rootDir": "./src",
         "strict": true,
         "esModuleInterop": true,
@@ -16,6 +16,6 @@
     ],
     "exclude": [
         "node_modules",
-        "build"
+        "**/*.spec.ts"
     ]
 }
