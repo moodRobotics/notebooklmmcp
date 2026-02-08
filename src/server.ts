@@ -8,7 +8,7 @@ import { NotebookLMClient } from "./client.js";
 import { AuthManager } from "./auth.js";
 import chalk from "chalk";
 
-const VERSION = "3.0.3";
+const VERSION = "3.0.4";
 
 const server = new Server(
   {

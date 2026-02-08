@@ -28,13 +28,19 @@ function updateOnWindows(args: string[]): Promise<never> {
   const script = [
     '@echo off',
     `echo [Update] Esperando a que el proceso anterior (PID ${pid}) finalice...`,
-    // tasklist loop: wait until PID disappears — polls every 1 s
+    // tasklist + findstr loop: wait until PID disappears — polls every 1 s
+    // Uses findstr instead of find to avoid blocking on stdin and PATH conflicts
+    // Max 30 iterations (30 s) to prevent infinite hang
+    `set /a TRIES=0`,
     `:waitloop`,
-    `tasklist /FI "PID eq ${pid}" 2>NUL | find /I "${pid}" >NUL`,
-    `if not errorlevel 1 (`,
+    `if %TRIES% GEQ 30 goto doinstall`,
+    `tasklist /FI "PID eq ${pid}" /NH 2>NUL | findstr /I /C:"${pid}" >NUL 2>NUL`,
+    `if %ERRORLEVEL% EQU 0 (`,
+    `  set /a TRIES+=1`,
     `  timeout /t 1 /nobreak >NUL`,
     `  goto waitloop`,
     `)`,
+    `:doinstall`,
     `echo [Update] Instalando actualizacion...`,
     `npm install -g notebooklm-mcp-server@latest`,
     `echo [Update] Relanzando aplicacion...`,
