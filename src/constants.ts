@@ -34,6 +34,10 @@ export const RPC_IDS = {
 
 export const BASE_URL = "https://notebooklm.google.com";
 export const BATCH_EXECUTE_PATH = "/_/LabsTailwindUi/data/batchexecute";
-export const QUERY_PATH = "/_/LabsTailwindUi/data/batchexecute";
+export const QUERY_PATH = "/_/LabsTailwindUi/data/google.internal.labs.tailwind.orchestration.v1.LabsTailwindOrchestrationService/GenerateFreeFormStreamed";
 
 export const DEFAULT_QUERY_TIMEOUT = 120000; // 120s
+export const SOURCE_ADD_TIMEOUT = 120000; // 120s for large sources
+
+// Build label (may need periodic updates as Google changes this)
+export const BUILD_LABEL = "boq_labs-tailwind-frontend_20260108.06_p0";
