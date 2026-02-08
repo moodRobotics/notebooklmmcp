@@ -384,6 +384,53 @@ export class NotebookLMClient {
     return notebooks;
   }
 
+  /**
+   * Get a single notebook's data including all source IDs.
+   * Uses the GET_NOTEBOOK RPC (rLM1Ne).
+   */
+  async getNotebook(notebookId: string): Promise<any> {
+    // Python: params = [notebook_id, None, [2], None, 0]
+    const result = await this.callRpc(
+      RPC_IDS.GET_NOTEBOOK,
+      [notebookId, null, [2], null, 0],
+      `/notebook/${notebookId}`
+    );
+    return result;
+  }
+
+  /**
+   * Extract source IDs from raw notebook data returned by getNotebook().
+   * Matches Python _extract_source_ids_from_notebook().
+   */
+  private extractSourceIdsFromNotebook(notebookData: any): string[] {
+    const sourceIds: string[] = [];
+    if (!notebookData || !Array.isArray(notebookData)) return sourceIds;
+
+    try {
+      // Structure: notebookData[0] = [title, sources_array, notebook_id, ...]
+      const notebookInfo = Array.isArray(notebookData[0]) ? notebookData[0] : notebookData;
+      if (notebookInfo.length > 1 && Array.isArray(notebookInfo[1])) {
+        const sources = notebookInfo[1];
+        for (const source of sources) {
+          // Each source: [[source_id], title, metadata, ...]
+          if (Array.isArray(source) && source.length > 0) {
+            const sourceIdWrapper = source[0];
+            if (Array.isArray(sourceIdWrapper) && sourceIdWrapper.length > 0) {
+              const sourceId = sourceIdWrapper[0];
+              if (typeof sourceId === 'string') {
+                sourceIds.push(sourceId);
+              }
+            }
+          }
+        }
+      }
+    } catch {
+      // ignore parse errors
+    }
+
+    return sourceIds;
+  }
+
   async createNotebook(title: string): Promise<string> {
     // Python: params = [title, None, None, [2], [1, None, None, None, None, None, None, None, None, None, [1]]]
     const params = [title, null, null, [2], [1, null, null, null, null, null, null, null, null, null, [1]]];
@@ -1248,9 +1295,21 @@ export class NotebookLMClient {
   ): Promise<any> {
     await this.init();
 
+    // Auto-fetch source_ids from notebook if not provided (matches Python behavior)
+    if (!sourceIds || sourceIds.length === 0) {
+      try {
+        const notebookData = await this.getNotebook(notebookId);
+        sourceIds = this.extractSourceIdsFromNotebook(notebookData);
+        console.error(`[NotebookLM] Auto-fetched ${sourceIds.length} source IDs from notebook`);
+      } catch (e: any) {
+        console.error(`[NotebookLM] Warning: Could not auto-fetch source IDs: ${e.message}`);
+        sourceIds = [];
+      }
+    }
+
     const cid = conversationId || uuidv4();
     // Python: sources_array = [[[sid]] for sid in source_ids] (triple nested)
-    const sources = sourceIds ? sourceIds.map(id => [[id]]) : [];
+    const sources = sourceIds.length > 0 ? sourceIds.map(id => [[id]]) : [];
 
     // Python: params = [sources_array, query_text, None, [2, null, [1]], conversation_id]
     const params = [

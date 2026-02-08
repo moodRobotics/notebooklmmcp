@@ -1,6 +1,6 @@
 {
   "name": "notebooklm-mcp-server",
-  "version": "3.0.2",
+  "version": "3.0.3",
   "description": "Node.js Model Context Protocol server for Google NotebookLM",
   "type": "module",
   "repository": {
