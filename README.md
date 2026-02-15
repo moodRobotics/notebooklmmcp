@@ -9,6 +9,14 @@
 </p>
 
 <p align="center">
+  <b>English</b> • 
+  <a href="README.es.md">Español</a> • 
+  <a href="README.fr.md">Français</a> • 
+  <a href="README.pt.md">Português</a> • 
+  <a href="README.de.md">Deutsch</a>
+</p>
+
+<p align="center">
   <a href="https://www.typescriptlang.org/"><img src="https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript"></a>
   <a href="https://modelcontextprotocol.io"><img src="https://img.shields.io/badge/MCP-Model%20Context%20Protocol-orange?style=for-the-badge" alt="MCP"></a>
   <a href="https://www.npmjs.com/package/notebooklm-mcp-server"><img src="https://img.shields.io/badge/NPM-CB3837?style=for-the-badge&logo=npm&logoColor=white" alt="NPM"></a>
@@ -227,6 +235,17 @@ git clone https://github.com/moodRobotics/notebook-mcp-server.git
 npm install
 npm run build
 ```
+
+## 🌐 Localization
+
+This project is available in multiple languages:
+- [English](README.md) (Source)
+- [Español](README.es.md)
+- [Français](README.fr.md)
+- [Português](README.pt.md)
+- [Deutsch](README.de.md)
+
+If you update the English `README.md`, please ensure the translations are updated accordingly to keep the documentation synchronized.
 
 ## 📄 License
 

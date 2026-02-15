@@ -39,7 +39,8 @@
     "test:sources": "tsx examples/test-parts.ts sources",
     "test:query": "tsx examples/test-parts.ts query",
     "test:full": "tsx examples/test-parts.ts full",
-    "lint": "eslint src/**/*.ts"
+    "lint": "eslint src/**/*.ts",
+    "docs:check": "node scripts/check-docs-sync.js"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.26.0",
