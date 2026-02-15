@@ -59,7 +59,6 @@ You can install the server directly from NPM:
 
 ```bash
 npm install -g notebooklm-mcp-server
-npx playwright install chromium
 ```
 
 > [!NOTE]

@@ -55,11 +55,10 @@ O **Servidor MCP do NotebookLM** traz o poder do NotebookLM do Google diretament
 
 ### 1. Instalação Global (Recomendada)
 
-Você pode instalar o servidor diretamente pelo NPM:
+Você pode instalar o servidor directamente pelo NPM:
 
 ```bash
 npm install -g notebooklm-mcp-server
-npx playwright install chromium
 ```
 
 > [!NOTE]
